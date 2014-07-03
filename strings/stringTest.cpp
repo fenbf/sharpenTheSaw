@@ -1,5 +1,6 @@
 #include <iostream>
 
+// from Cracking the coding... task 1.2
 void reverseCString(char *str)
 {
 	// find len:
@@ -16,6 +17,73 @@ void reverseCString(char *str)
 		char t = str[i];
 		str[i] = str[len - 1 - i];
 		str[len - 1 - i] = t;
+	}
+
+	// another way (faster? shorter?) would be to
+	// use pointer arithmetic instead of array[]
+}
+
+// frow Cracking the coding... task 1.3
+bool isAnagram(const char *strA, const char *strB)
+{
+	// one way is to sort strings
+	// another is to count character occurence
+
+	const int lenA = strlen(strA);
+	const int lenB = strlen(strB);
+
+	if (lenA != lenB)
+		return false;
+
+	int occurrence[128] = { 0 };
+
+	for (int i = 0; i < lenA; ++i)
+		occurrence[strA[i]]++;
+
+	for (int i = 0; i < lenB; ++i)
+		occurrence[strB[i]]--;
+
+	for (int i = 0; i < 128; ++i)
+		if (occurrence[i] != 0)
+			return false;
+
+	return true;
+}
+
+// from Cracking the Coding... task 1.4
+// encode ' ' into '%20'
+// assume input string has needed place
+void encodeSpaces(char *str)
+{
+	const int len = strlen(str);
+
+	// count ' '
+	int spaces = 0;
+	for (int i = 0; i < len; ++i)
+		if (str[i] == ' ')
+			spaces++;
+	
+	if (spaces > 0)
+	{
+		const int finalLen = len + spaces * 2;
+		int pos = finalLen - 1;
+		for (int i = len - 1; i >= 0 && spaces > 0; i--)
+		{
+			if (str[i] == ' ')
+			{
+				str[pos] = '0';
+				str[pos - 1] = '2';
+				str[pos - 2] = '%';
+				pos -= 3;
+				spaces--;
+			}
+			else
+			{
+				str[pos] = str[i];
+				--pos;
+			}
+		}
+		str[finalLen] = '\0';
 	}
 }
 
@@ -42,4 +110,19 @@ int main()
 	std::cout << test << std::endl;
 	reverseCString(test);
 	std::cout << test << std::endl;
+
+	std::cout << isAnagram("hello", "olleh") << std::endl;
+	std::cout << isAnagram("ABcdefgh", "abcdefgh") << std::endl;
+
+	char strEncode[8+4] = "ab ab a";
+	encodeSpaces(strEncode);
+	std::cout << strEncode << std::endl;
+	
+	char strEncode1[] = "ababa";
+	encodeSpaces(strEncode1);
+	std::cout << strEncode1 << std::endl;
+
+	char strEncode2[5+8] = "    ";
+	encodeSpaces(strEncode2);
+	std::cout << strEncode2 << std::endl;
 }
