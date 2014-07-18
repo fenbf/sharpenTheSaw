@@ -1,4 +1,6 @@
 #include <iostream>
+#include <assert.h>
+#include <cstring>>
 
 // from Cracking the coding... task 1.2
 void reverseCString(char *str)
@@ -87,6 +89,104 @@ void encodeSpaces(char *str)
 	}
 }
 
+int countProbableCompressionLen(const char *original, int originalLen)
+{
+	// count if we can compress anything:
+	int compressedLen = originalLen;
+	char prevChar = original[0];
+	int groups = 1;
+	int groupLen = 1;
+
+	for (int i = 1; i < originalLen; ++i)
+	{
+		if (prevChar == original[i] && groupLen < 10)
+		{			
+			++groupLen;
+			--compressedLen;
+		}
+		else
+		{
+			++groups;
+			groupLen = 1;
+		}
+
+		prevChar = original[i];
+	}
+
+	// each group adds one character (a digit)
+	// why '-1' ?
+	compressedLen += groups;
+
+	return compressedLen;
+}
+
+void compressStringInternal(const char *original, int originalLen, char *output, int compressedLen)
+{
+	char prevChar = original[0];
+	int groups = 1;
+	int groupLen = 1;
+	char groupLetter = original[0];
+
+	output[0] = original[0];
+	int outPos = 1;
+
+	for (int i = 1; i < originalLen; ++i)
+	{
+		if (prevChar == original[i] && groupLen < 10)
+		{
+			++groupLen;
+		}
+		else
+		{
+			// finish previous group:
+			if (groupLen > 2)
+				output[outPos++] = '0' + groupLen;
+			else
+				output[outPos++] = groupLetter;
+
+			groupLen = 1;
+			groupLetter = original[i];
+			output[outPos++] = groupLetter;
+		}
+
+		prevChar = original[i];
+	}
+
+	if (groupLen > 2)
+		output[outPos++] = '0' + groupLen;
+	else
+		output[outPos++] = groupLetter;
+}
+
+bool compressString(const char *original, char **output, int *outLen)
+{
+	if (original == NULL || original[0] == '\0' || output == NULL)
+	{
+		if (output) *output = NULL;
+		if (outLen) *outLen = 0;
+		return false;
+	}
+
+	const int originalLen = strlen(original);
+
+	const int compressedLen = countProbableCompressionLen(original, originalLen);
+
+	if (compressedLen >= originalLen)
+	{
+		if (output) *output = NULL;
+		if (outLen) *outLen = originalLen;
+		return false;
+	}
+
+	*output = new char[compressedLen + 1];
+	(*output)[compressedLen] = '\0';
+	*outLen = compressedLen;
+	assert(*output);
+	compressStringInternal(original, originalLen, *output, compressedLen);
+
+	return true;
+}
+
 void stringTest()
 {
 	// !!does not work!!, runtime error!
@@ -125,4 +225,10 @@ int main()
 	char strEncode2[5+8] = "    ";
 	encodeSpaces(strEncode2);
 	std::cout << strEncode2 << std::endl;
+
+	char *compressed = NULL;
+	int outLen = 0;
+	if (compressString("abc", &compressed, &outLen))
+		std::cout << compressed << std::endl;
+	delete[] compressed;
 }
