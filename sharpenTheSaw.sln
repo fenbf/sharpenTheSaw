@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "tries", "tries\tries.vcxpro
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "strings", "strings\strings.vcxproj", "{CEB9CBC3-06E6-4EEE-8961-B13F400B71E6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "stdalg", "stdalg\stdalg.vcxproj", "{751A1F68-904E-43BE-A8B2-D5E68D7EAA38}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -33,6 +35,10 @@ Global
 		{CEB9CBC3-06E6-4EEE-8961-B13F400B71E6}.Debug|Win32.Build.0 = Debug|Win32
 		{CEB9CBC3-06E6-4EEE-8961-B13F400B71E6}.Release|Win32.ActiveCfg = Release|Win32
 		{CEB9CBC3-06E6-4EEE-8961-B13F400B71E6}.Release|Win32.Build.0 = Release|Win32
+		{751A1F68-904E-43BE-A8B2-D5E68D7EAA38}.Debug|Win32.ActiveCfg = Debug|Win32
+		{751A1F68-904E-43BE-A8B2-D5E68D7EAA38}.Debug|Win32.Build.0 = Debug|Win32
+		{751A1F68-904E-43BE-A8B2-D5E68D7EAA38}.Release|Win32.ActiveCfg = Release|Win32
+		{751A1F68-904E-43BE-A8B2-D5E68D7EAA38}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

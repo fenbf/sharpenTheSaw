@@ -1,6 +1,8 @@
 #include <iostream>
 #include <assert.h>
-#include <cstring>>
+#include <cstring>
+#include <string>
+#include <algorithm> // std::max/min
 
 // from Cracking the coding... task 1.2
 void reverseCString(char *str)
@@ -187,6 +189,49 @@ bool compressString(const char *original, char **output, int *outLen)
 	return true;
 }
 
+void internalIntegerToStringReverse(char buffer[16], const unsigned num, unsigned int *len)
+{
+	unsigned int temp = num;
+	int strId = 0;
+	while (temp >= 0)
+	{
+		buffer[strId++] = static_cast<char>(temp % 10) + '0';
+		temp /= 10;
+		if (temp == 0) break;
+	}
+	buffer[strId] = '\0';
+	*len = strId;
+}
+
+void internalMerge(char aStr[16], char bStr[16], int aLen, int bLen, char output[32])
+{
+	const int commonLen = aLen + bLen;
+	int aId = aLen-1;
+	int bId = bLen-1;
+	for (int i = commonLen - 1; i >= 0; i--)
+	{
+		if (i % 2 == 0)
+			output[i] = (aId >= 0 ? aStr[aId--] : '0');
+		else 
+			output[i] = (bId >= 0 ? bStr[bId--] : '0');
+	}
+}
+
+std::string twoNumbersConcat(const unsigned int a, const unsigned int b)
+{
+	char aStr[16] = { 0 }; // max len of int32, decimal is 10 chars 2,147,483,647
+	char bStr[16] = { 0 };
+	char output[32] = { 0 };
+
+	unsigned aLen = 0, bLen = 0;
+	internalIntegerToStringReverse(aStr, a, &aLen);
+	internalIntegerToStringReverse(bStr, b, &bLen);
+
+	internalMerge(aStr, bStr, aLen, bLen, output);
+
+	return std::string(output);
+}
+
 void stringTest()
 {
 	// !!does not work!!, runtime error!
@@ -231,4 +276,6 @@ int main()
 	if (compressString("abc", &compressed, &outLen))
 		std::cout << compressed << std::endl;
 	delete[] compressed;
+
+	std::cout << twoNumbersConcat(10, 123) << std::endl;
 }
