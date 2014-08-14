@@ -9,6 +9,8 @@
 #include <locale> // isspace
 #include <numeric> // iota
 #include <vector>
+#include <functional> // not1
+#include <utility> // pair
 
 #ifndef __func__
 	#define __func__ __FUNCTION__
@@ -56,8 +58,8 @@ void insertionSortTest()
 //
 // 2. quick sort made with std::algorithm building blocks
 //
-template<class FwdIt, class Compare = std::less<>>
-void quickSort(FwdIt first, FwdIt last, Compare cmp = Compare{})
+template<class FwdIt, typename Compare>
+void quickSort(FwdIt first, FwdIt last, Compare cmp)
 {
 	auto const N = std::distance(first, last);
 	if (N <= 1) return; 
@@ -77,17 +79,17 @@ void quickSortTest()
 	generateRand(intArray, intArray + 5, 1);
 	printAll(intArray, intArray + 5, "before");
 
-	quickSort(intArray, intArray + 5);
+	quickSort(intArray, intArray + 5, std::less<int>());
 	printAll(intArray, intArray + 5, "after");
 }
 
 //
 // 3. slide from Cpp Seasoning
 //
-template <typename RandIter> auto slide(RandIter f, RandIter l, RandIter p) -> std::pair<RandIter, RandIter>
+template <typename RandIter> auto slide(RandIter f, RandIter l, RandIter p) -> std::pair < RandIter, RandIter >
 {
-	if (p < f) return { p, rotate(p, f, l) };
-	if (l < p) return { rotate(f, l, p), p };
+	if (p < f) return{ p, std::rotate(p, f, l) };
+	if (l < p) return { std::rotate(f, l, p), p };
 	return { f, l };
 }
 
@@ -99,9 +101,32 @@ void slideTest()
 	std::iota(std::begin(dvec), std::end(dvec), -10.0);
 	printAll(std::begin(dvec), std::end(dvec), "initial");
 
-	auto p = slide(std::begin(dvec), std::next(std::begin(dvec), 3), std::end(dvec));
+	slide(std::begin(dvec), std::next(std::begin(dvec), 3), std::end(dvec));
 	printAll(std::begin(dvec), std::end(dvec), "+ 3 right");
-	std::cout << *(p.first) << std::endl;
+	//std::cout << *(p.first) << std::endl;
+}
+
+//
+// 3. gather (cpp seasoning)
+//
+template <typename BiIter,typename UnaryPredicate> 
+auto gather(BiIter f, BiIter l, BiIter p, UnaryPredicate s) -> std::pair<BiIter, BiIter>
+{
+	return { std::stable_partition(f, p, s), std::stable_partition(p, l, s) };
+}
+
+bool pre(int &a) { return a % 3 == 0; }
+
+void gatherTest()
+{
+	PRINT_TEST_TITLE();
+
+	std::vector<int> vec(10);
+	std::iota(std::begin(vec), std::end(vec), 10);
+	printAll(std::begin(vec), std::end(vec), "initial");
+
+	gather(std::begin(vec), std::end(vec), std::begin(vec), pre);
+	printAll(std::begin(vec), std::end(vec), "+ 3 right");
 }
 
 //
@@ -115,7 +140,7 @@ std::string trimLeft(const std::string &s) {
 
 std::string trimRight(const std::string &s) {
 	auto temp = s;
-	temp.erase(std::find_if(std::rbegin(temp), std::rend(temp), [](char c){return !std::isspace(c, std::locale()); }).base(), std::end(temp));
+	temp.erase(std::find_if(temp.rbegin(), temp.rend(), [](char c){return !std::isspace(c, std::locale()); }).base(), std::end(temp));
 	return temp;
 }
 
@@ -151,15 +176,21 @@ void permuteSortTest()
 	generateRand(intArray, intArray + 7, 10);
 	printAll(intArray, intArray + 7, "before");
 
-	quickSort(intArray, intArray + 7);
+	permuteSort(intArray, intArray + 7);
 	printAll(intArray, intArray + 7, "after");
 }
 
 int main()
 {
+	std::pair<int, int> p;
+	p = { 0, 1 };
+
 	insertionSortTest();
 	quickSortTest();
-	trimStringTest();
-	slideTest();
+	//slideTest();
+	gatherTest();
+
+	trimStringTest();	
 	permuteSortTest();
+	
 }
