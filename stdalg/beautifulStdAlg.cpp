@@ -18,13 +18,17 @@
 
 #define PRINT_TEST_TITLE() std::cout << std::endl << "*** " << __func__ << " ***" << std::endl;
 
-template <typename T> void printAll(T start, T end, const std::string &title = "")
+template <typename T> void printAll(T start, T end, const std::string &title)
 {
 	if (!title.empty())
 		std::cout << title << " : ";
 
-	for (auto i = start; i != end; ++i)
-		std::cout << *i << ", ";
+	//for (auto i = start; i != end; ++i)
+    //		std::cout << *i << ", ";
+	
+	std::copy(start, end, std::ostream_iterator<std::iterator_traits<T>::value_type>(std::cout, ", "));
+	// or decltype(*start)
+
 	std::cout << std::endl;
 }
 
